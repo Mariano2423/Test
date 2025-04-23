@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escuela en Casa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Librería PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Bootstrap + Estilos -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="../../../public/css/style.css" rel="stylesheet" type="text/css" />
+
+    <!-- jQuery + Popper + Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container">
+            <a class="navbar-brand text-white" href="../../index.php">Escuela en Casa</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link text-white" href="../../curso/listado.html">Listado de Cursos</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../../curso/registro_matricula.html">Registro de Matrícula</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#">Reportes</a>
+                        <ul class="dropdown-menu bg-primary">
+                            <li><a class="dropdown-item text-white" href="reporte_trimestral.html">Reporte Trimestral</a></li>
+                            <li><a class="dropdown-item text-white" href="reporte_rendimiento.html">Reporte Rendimiento</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="listado.html">Mi Perfil</a></li>
+                </ul>
+            </div>
+            <ul class="navbar-nav">
+                <li class="nav-item my-auto">
+                    <button class="btn btn-outline-light">Salir</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <section class="bg-custom">
+        <div class="container mt-5">
+            <h1 class="text-center text-white">Reporte de Cursos Lectivos</h1>
+            <div class="row mt-4">
+                <!-- FILTROS -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-body-custom text-white">Reportes</div>
+                        <form id="form-reporte">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="anio">Año:</label>
+                                    <select name="anio" id="anio">
+                                        <option value="2023">2023</option>
+                                        <option value="2024" selected>2024</option>
+                                        <option value="2025">2025</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label><input type="checkbox" name="reporteTrimestral" value="1"> Reporte Trimestral</label><br>
+                                    <label><input type="checkbox" name="reporteMensual" value="1"> Reporte Mensual</label><br>
+                                    <label><input type="checkbox" name="reporteAnual" value="1"> Reporte Anual</label>
+                                </div>
+                                <div class="text-center d-flex justify-content-between">
+                                    <button type="submit" class="btn bg-body-custom text-white">Filtrar</button>
+                                    <a href="" class="btn bg-body-custom text-white">Limpiar</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- RESULTADOS -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-body-custom text-white">Datos Disponibles</div>
+                        <div class="card-body">
+                            <div id="reporte-pdf">
+                                <h4 class="text-center mb-3">Reporte</h4>
+                                <table class="table table-bordered text-center">
+                                    <thead class="bg-body-custom text-white">
+                                        <tr>
+                                            <th>Fecha Inicio</th>
+                                            <th>Fecha Final</th>
+                                            <th>Curso</th>
+                                            <th>Estado</th>
+                                            <th>Nota</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td colspan="5">No hay datos disponibles</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button class="btn btn-dark" onclick="descargarPDF()">Descargar PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="navbar-light bg-primary text-white mt-5 p-3">
+        <div class="container text-center">
+            Derechos Reservados - Escuela en Casa 2025
+        </div>
+    </footer>
+
+    <!-- SCRIPT AJAX -->
+    <script>
+    $(document).ready(function () {
+        $("#form-reporte").on("submit", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: 'reporte_trimestral.php',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    const tbody = $("table tbody");
+                    tbody.empty();
+
+                    if (data.length === 0) {
+                        tbody.append("<tr><td colspan='5'>No hay datos disponibles</td></tr>");
+                    } else {
+                        data.forEach(row => {
+                            tbody.append(`
+                                <tr>
+                                    <td>${row.fecha_inicio}</td>
+                                    <td>${row.fecha_final}</td>
+                                    <td>${row.nombre_curso}</td>
+                                    <td>${row.estado}</td>
+                                    <td>${row.nota}</td>
+                                </tr>
+                            `);
+                        });
+                    }
+                },
+                error: function () {
+                    alert("Error al obtener los datos del reporte.");
+                }
+            });
+        });
+    });
+    </script>
+
+<script>
+    function descargarPDF() {
+        const tablaOriginal = document.querySelector("#reporte-pdf table");
+        const contenedor = document.getElementById("contenedor-pdf-temporal");
+    
+        const filas = tablaOriginal.querySelectorAll("tbody tr");
+        const hayDatos = Array.from(filas).some(f => !f.innerText.includes("No hay datos disponibles"));
+    
+        if (!hayDatos) {
+            alert("No hay datos para exportar.");
+            return;
+        }
+    
+        // Obtener año seleccionado
+        const anio = document.getElementById("anio").value;
+    
+        // Detectar tipo de reporte seleccionado
+        let tipo = "reporte";
+        if (document.querySelector('[name="reporteAnual"]:checked')) tipo = "anual";
+        else if (document.querySelector('[name="reporteTrimestral"]:checked')) tipo = "trimestral";
+        else if (document.querySelector('[name="reporteMensual"]:checked')) tipo = "mensual";
+    
+        // Clonar la tabla
+        const tablaClon = tablaOriginal.cloneNode(true);
+        tablaClon.setAttribute("border", "1");
+        tablaClon.style.borderCollapse = "collapse";
+        tablaClon.style.width = "100%";
+        tablaClon.style.textAlign = "center";
+    
+        contenedor.innerHTML = "";
+        const titulo = document.createElement("h2");
+        titulo.innerText = `Reporte ${tipo} ${anio}`;
+        titulo.style.textAlign = "center";
+        titulo.style.marginBottom = "20px";
+        contenedor.appendChild(titulo);
+        contenedor.appendChild(tablaClon);
+        contenedor.style.display = "block";
+    
+        const nombreArchivo = `reporte_${tipo}_${anio}.pdf`;
+    
+        html2pdf().set({
+            margin: 0.5,
+            filename: nombreArchivo,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }).from(contenedor).save().then(() => {
+            contenedor.style.display = "none";
+            contenedor.innerHTML = "";
+        });
+    }
+    </script>
+
+        <div id="contenedor-pdf-temporal" style="display:none;"></div>
+            
+</body>
+</html>
+

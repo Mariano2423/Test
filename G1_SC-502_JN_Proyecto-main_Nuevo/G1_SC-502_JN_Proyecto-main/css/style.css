@@ -1,0 +1,21 @@
+section.bg-custom {
+    background: rgba(1, 38, 71,0.8) !important;
+}
+.bg-body-custom {
+    background: rgba(1, 38, 71);
+}
+.row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.card {
+    margin: 0.5rem;
+}
+
+.dropdown-menu .dropdown-item:hover{
+    color: rgba(1, 38, 71) !important;
+    background-color: transparent !important;
+}

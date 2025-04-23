@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Notas</title>
+</head>
+<body>
+  <h2>Registrar Estudiante y Nota</h2>
+  <form id="formNotas">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="number" id="nota" placeholder="Nota" min="0" max="100" required>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <h3>Listado de Notas</h3>
+  <table border="1">
+    <thead>
+      <tr><th>Nombre</th><th>Nota</th></tr>
+    </thead>
+    <tbody id="tablaNotas"></tbody>
+  </table>
+
+  <script>
+    document.getElementById("formNotas").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const nota = document.getElementById("nota").value;
+
+      fetch("../../controller/notaEstudianteController.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `nombre=${encodeURIComponent(nombre)}&nota=${encodeURIComponent(nota)}`
+      }).then(() => {
+        document.getElementById("formNotas").reset();
+        cargarNotas();
+      });
+    });
+
+    function cargarNotas() {
+      fetch("../../controller/notaEstudianteController.php")
+        .then(res => res.json())
+        .then(data => {
+          const tabla = document.getElementById("tablaNotas");
+          tabla.innerHTML = "";
+          data.forEach(est => {
+            tabla.innerHTML += `<tr><td>${est.nombre}</td><td>${est.nota}</td></tr>`;
+          });
+        });
+    }
+
+    cargarNotas();
+  </script>
+</body>
+</html>

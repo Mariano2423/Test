@@ -1,0 +1,39 @@
+@media print {
+    .no-print {
+        display: none;
+    }
+    .print-content {
+        font-size: 12pt;
+        color: black;
+        background: white;
+        margin: 1cm;
+    }
+    .print-content h1 {
+        text-align: center;
+        font-size: 16pt;
+        margin-bottom: 20px;
+    }
+    .print-content table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10pt;
+    }
+    .print-content th, .print-content td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+    .print-content th {
+        background: #f0f0f0;
+    }
+    .print-content .card {
+        border: none;
+    }
+    .print-content .card-header {
+        font-size: 12pt;
+        font-weight: bold;
+        border: 1px solid black;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+}
